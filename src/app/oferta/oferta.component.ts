@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router'
 import { Oferta } from '../shared/oferta.model'
 import { OfertasService } from '../ofertas.service'
-import { interval, Observable, Observer } from 'rxjs';
+import { interval, Observable, Observer, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-oferta',
@@ -10,7 +10,10 @@ import { interval, Observable, Observer } from 'rxjs';
   styleUrls: ['./oferta.component.css'],
   providers: [ OfertasService ]
 })
-export class OfertaComponent implements OnInit {
+export class OfertaComponent implements OnInit, OnDestroy {
+
+  private tempoObservableSubscription: Subscription
+  private meuObservableTesteSubscription: Subscription
 
   public oferta: Oferta
 
@@ -27,11 +30,11 @@ export class OfertaComponent implements OnInit {
     //   () => console.log('Processamento concluido')
     // )
 
-    // let tempo = interval(2000)
+    let tempo = interval(2000)
 
-    // tempo.subscribe((intervalo: number) => {
-    //   console.log(intervalo)
-    // })
+    this.tempoObservableSubscription = tempo.subscribe((intervalo: number) => {
+      console.log(intervalo)
+    })
 
     //observable (observável)
     let meuObservableTeste = Observable.create((observer: Observer<number>) =>{
@@ -42,11 +45,16 @@ export class OfertaComponent implements OnInit {
     })
 
     //observable (observador)
-    meuObservableTeste.subscribe(
+    this.meuObservableTesteSubscription = meuObservableTeste.subscribe(
       (resultado: number) => console.log(resultado + 10),
       (erro: string) => console.log(erro),
       () => console.log('Stream de eventos foi finalizada')
     )
+  }
+
+  ngOnDestroy() {
+    this.meuObservableTesteSubscription.unsubscribe()
+    this.tempoObservableSubscription.unsubscribe()
   }
 
 }
