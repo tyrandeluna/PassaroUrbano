@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core'
 import { Oferta } from './shared/oferta.model'
 
 import { URL_API } from './app.api'
+import { Observable, throwError } from 'rxjs'
+import {map, catchError} from "rxjs/operators";
 
 @Injectable()
 export class OfertasService {
@@ -41,5 +43,13 @@ export class OfertasService {
         return this.http.get(`${URL_API}/onde-fica?id=${id}`)
             .toPromise()
             .then((resposta: any) => resposta.shift().descricao)
+    }
+
+    public pesquisaOfertas(termo: string): Observable<Oferta[]> {
+        return this.http.get(`${URL_API}/ofertas?descricao_oferta=${termo}`)
+            .pipe(
+                map((resposta: any)=> resposta.json()),
+                catchError((error: any)=> throwError("Algo deu errado!"))
+            );
     }
 }
