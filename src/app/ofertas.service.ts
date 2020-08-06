@@ -4,7 +4,7 @@ import { Oferta } from './shared/oferta.model'
 
 import { URL_API } from './app.api'
 import { Observable, throwError } from 'rxjs'
-import {map, catchError} from "rxjs/operators";
+import {map, catchError, retry} from "rxjs/operators";
 
 @Injectable()
 export class OfertasService {
@@ -49,7 +49,7 @@ export class OfertasService {
         return this.http.get(`${URL_API}/ofertas?descricao_oferta_like=${termo}`)
             .pipe(
                 map((resposta: any)=> resposta),
-                catchError((error: any)=> throwError("Algo deu errado!"))
+                retry(10)
             );
     }
 }
